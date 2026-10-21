@@ -1,0 +1,28 @@
+# gitleaks rules for MaskedMail's public output: gitleaks' own rules plus this project's secret formats.
+title = "DarkCipher MaskedMail"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "discord-webhook-url"
+description = "Discord webhook URL"
+regex = '''https://(?:ptb\.|canary\.)?discord(?:app)?\.com/api/webhooks/\d+/[\w-]+'''
+keywords = ["discord"]
+
+[[rules]]
+id = "github-token"
+description = "GitHub token (classic, OAuth, app or fine-grained)"
+regex = '''\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})\b'''
+keywords = ["ghp_", "gho_", "ghu_", "ghs_", "ghr_", "github_pat_"]
+
+[[rules]]
+id = "fastmail-api-token"
+description = "Fastmail API token"
+regex = '''\bfmu1-[A-Za-z0-9-]{20,}\b'''
+keywords = ["fmu1-"]
+
+[[rules]]
+id = "login-at-ip"
+description = "A user@IPv4 login, as used for deploy targets"
+regex = '''\b[a-z_][a-z0-9_-]{1,31}@(?:\d{1,3}\.){3}\d{1,3}\b'''

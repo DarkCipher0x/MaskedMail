@@ -111,14 +111,18 @@ ComposeWindow.CollectAsync → QueuedEmail(s)    (one per recipient if asked; co
    - generates `docs/CHANGELOG.md`;
    - builds the MSI (WiX 5);
    - writes `dist\<version>\`: the MSI, zip, exe, `docs\`, `store\` (submission guide, privacy policy and Store-size
-     screenshots, checked to be at least 1366×768), release notes, the unit-test and self-test reports and `SHA256SUMS.txt`;
+     screenshots, checked to be at least 1366×768), release notes, the unit-test and self-test reports, the
+     sanitised source zip (allowlist, privacy scan, gitleaks) and `SHA256SUMS.txt`;
    - runs `tools\make-msix.ps1`. That writes the Store package once `installer\msix\store-identity.json` is filled in,
      and otherwise `-Check` (validate and pack, keep nothing).
 
    Old releases are kept.
-3. **Microsoft Store:** follow `installer\msix\STORE-SUBMISSION.md`. `make-msix.ps1 -TestSign` makes a local,
+3. **Publishing:** `release.ps1` checks the build, rebuilds the public copy from the source zip and pushes it to the
+   public repository, then creates the GitHub Release. It has a dry run, a kill switch (`DCX_PUBLISH_OFF`), and a
+   record of every step, so it can be safely run again. See [RELEASING.md](RELEASING.md).
+4. **Microsoft Store:** follow `installer\msix\STORE-SUBMISSION.md`. `make-msix.ps1 -TestSign` makes a local,
    self-signed test package.
-4. **Add-ons:** `samples\addons\pack.ps1 <folder>` writes to `dist\addons\<id>\`.
-5. **Identities that must never change:**
+5. **Add-ons:** `samples\addons\pack.ps1 <folder>` writes to `dist\addons\<id>\`.
+6. **Identities that must never change:**
    - the MSI's UpgradeCode `053f918a-404b-4528-b56e-ffc0c1e76023`;
    - the MSIX identity, once it's reserved in Partner Center.

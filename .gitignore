@@ -25,3 +25,8 @@ selftest.txt
 
 # The privacy scan's local term list (tools\write-public-source.ps1): names that must never be published stay on this PC
 *.local.txt
+
+# The pinned gitleaks binary (tools\release\get-gitleaks.ps1 downloads and verifies it)
+tools/bin/
+
+# Per-release pipeline records live in dist\<ver>\release-state.json (dist is never committed)

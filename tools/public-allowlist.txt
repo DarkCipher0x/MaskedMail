@@ -1,0 +1,50 @@
+# Every file that may be published (the public repository, the source zip, everything the website takes from it).
+# One pattern per line, relative to the project root, '/' separators: '*' matches within a folder, '**' any folders.
+# A file that matches no line here and no line in private-list.txt stops the build ("classify this file"), so nothing
+# is ever published or dropped without a decision. Build output (bin, obj, dist, publish, .vs) is never considered.
+.config/dotnet-tools.json
+.github/**
+.gitignore
+CONTRIBUTING.md
+DarkCipher.MaskedMail.sln
+Directory.Build.props
+Directory.Build.targets
+Directory.Packages.props
+LICENSE
+README.md
+THIRD-PARTY-NOTICES.md
+build.ps1
+release.ps1
+docs/*.md
+docs/release-notes/*.md
+docs/screenshots/*.png
+installer/DarkCipherMaskedMail.wxs
+installer/License.rtf
+installer/msix/AppxManifest.xml
+installer/msix/STORE-SUBMISSION.md
+installer/msix/store-identity.json
+samples/addons/pack.ps1
+samples/addons/*/*.ps1
+samples/addons/*/addon.json
+samples/addons/*/theme.json
+samples/addons/*/DcxBridge.dll
+samples/addons/sdk/DcxBridge.cs
+src/**/*.cs
+src/**/*.csproj
+src/**/*.xaml
+src/**/packages.lock.json
+src/DcxMaskedMail/Assets/app.ico
+src/DcxMaskedMail/Assets/logo.png
+src/DcxMaskedMail/Assets/web/editor.html
+tests/**/*.cs
+tests/**/*.csproj
+tests/**/packages.lock.json
+tools/Directory.Build.props
+tools/*.ps1
+tools/msix/MsixTools.csproj
+tools/release/*.ps1
+tools/public-allowlist.txt
+tools/private-list.txt
+tools/approved-images.txt
+tools/gitleaks.toml
+tools/release-config.json
