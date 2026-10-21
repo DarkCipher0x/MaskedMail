@@ -48,6 +48,22 @@ if ($p.ExitCode -ne 0) { Get-Content $report -Encoding UTF8; throw 'self-test fa
 
 New-Item -ItemType Directory -Path $dist | Out-Null
 
+# The README's screenshots (docs\screenshots, shown on GitHub) come from this build's renders, so they always match the
+# release. Demo data only; look at each one before publishing. The README's version badge follows the version too.
+$shotDir = Join-Path $root 'docs\screenshots'
+if (Test-Path $shotDir) { Remove-Item (Join-Path $shotDir '*.png') }
+else { New-Item -ItemType Directory -Path $shotDir | Out-Null }
+foreach ($s in 'main-dark', 'main-light', 'main-throwaway', 'throwaway', 'new-alias', 'compose', 'queue', 'sign-in', 'settings', 'settings-masked', 'settings-domains', 'settings-disposable', 'settings-throwaway') {
+    $src = Join-Path $scratch "shots\$s.png"
+    if (-not (Test-Path $src)) { throw "missing self-test render for the README: $s.png" }
+    Copy-Item $src $shotDir
+}
+$readme = Join-Path $root 'README.md'
+$readmeText = [IO.File]::ReadAllText($readme, [Text.Encoding]::UTF8)
+$readmeText = [regex]::Replace($readmeText, 'badge/version-[0-9.]+-', "badge/version-$version-")
+$readmeText = [regex]::Replace($readmeText, 'alt="Version [0-9.]+"', "alt=""Version $version""")
+[IO.File]::WriteAllText($readme, $readmeText, (New-Object Text.UTF8Encoding $false))
+
 # MSI: Start menu + optional desktop shortcut, upgrades older versions, optional data removal on uninstall
 Push-Location $root
 try {

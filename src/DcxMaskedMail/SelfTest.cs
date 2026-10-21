@@ -101,7 +101,7 @@ public static class SelfTest
         fake.Boxes.Add(new FakeBox("f0", "demo0.x7k2@fastmail.com", "auto", null));
         string[] subjects = ["Your order has shipped", "Welcome to Example Shop", "Receipt #1042"];
         for (int i = 0; i < 3; i++)
-            fake.Emails.Add(new FakeEmail("r" + i, "f0", $$"""{"subject":"{{subjects[i]}}","from":[{"name":"Example Shop","email":"orders@shop.example.com"}],"to":[{"email":"demo0.x7k2@fastmail.com"}],"receivedAt":"2026-10-1{{i}}T09:3{{i}}:00Z","preview":"Hi Alex, thanks for your order. Here is what happens next…","keywords":{{(i == 0 ? "{}" : "{\"$seen\":true}")}}}"""));
+            fake.Emails.Add(new FakeEmail("r" + i, "f0", $$"""{"subject":"{{subjects[i]}}","from":[{"name":"Example Shop","email":"orders@shop.example.com"}],"to":[{"email":"demo0.x7k2@fastmail.com"}],"receivedAt":"2026-10-1{{i}}T09:3{{i}}:00Z","preview":"Hi Alex, thanks for your order. Here is what happens next…","keywords":{{(i == 0 ? "{}" : "{\"$seen\":true}")}},"textBody":[{"partId":"1","type":"text/plain"}],"htmlBody":[{"partId":"2","type":"text/html"}],"bodyValues":{"1":{"value":"Hi Alex, thanks for your order."},"2":{"value":"{{DemoOrderHtml}}" } } }"""));
         AppSettings.Current.Folders.Clear();
         AppSettings.Current.Folders["demo0.x7k2@fastmail.com"] = "f0";
         AppSettings.Current.RouteOff.Clear();
@@ -109,22 +109,23 @@ public static class SelfTest
 
         var reg = new ProviderRegistry(new AppSettings { FastmailToken = "t" }, fake);
         var main = OffScreen(new MainWindow(), 1600, 960);   // also the Store screenshots: at least 1366 x 768
+        await main.InitReaderForTestAsync();
         await main.ReloadAccountsAsync(reg);
         main.AliasList.SelectedItem = reg.Aliases.First(a => a.Routed);
         await Task.Delay(400);
         main.MessageList.SelectedIndex = 0;
-        await Task.Delay(400);
+        await Task.Delay(3000);   // the message viewer (WebView2) starts and draws the message
         foreach (var mode in new[] { ThemeMode.Dark, ThemeMode.Light })
         {
             ThemeManager.Apply(mode);
             await Task.Delay(150);
-            Save(main, Path.Combine(dir, $"main-{mode.ToString().ToLowerInvariant()}.png"));
+            await SaveAsync(main, Path.Combine(dir, $"main-{mode.ToString().ToLowerInvariant()}.png"));
         }
         ThemeManager.Apply(ThemeMode.Dark);
 
         var settings = OffScreen(new Views.SettingsWindow(reg, "Security & privacy"), 1440, 960);
         await Task.Delay(150);
-        Save(settings, Path.Combine(dir, "settings.png"));
+        await SaveAsync(settings, Path.Combine(dir, "settings.png"));
         // Settings must make security easy to find: its own category, and search reaches every security option.
         var secCards = settings.VisibleCardsForTest;
         if (!secCards.Contains("Encryption & master password") || !secCards.Contains("Two-factor sign-in") || !secCards.Contains("App lock")) return Fail("security category: " + string.Join(",", secCards));
@@ -136,12 +137,12 @@ public static class SelfTest
         settings.SearchForTest("");
         settings.RevealCategory("Fastmail");
         await Task.Delay(100);
-        Save(settings, Path.Combine(dir, "settings-fastmail.png"));
+        await SaveAsync(settings, Path.Combine(dir, "settings-fastmail.png"));
         foreach (var (category, file) in new[] { ("Masked-email services", "settings-masked.png"), ("Your own domains", "settings-domains.png"), ("Disposable inboxes", "settings-disposable.png") })
         {
             settings.RevealCategory(category);
             await Task.Delay(100);
-            Save(settings, Path.Combine(dir, file));
+            await SaveAsync(settings, Path.Combine(dir, file));
         }
         settings.Close();
 
@@ -157,11 +158,11 @@ public static class SelfTest
             """.Replace("@@TW@@", tw.Email)));
         var twWin = OffScreen(new Views.ThrowawayWindow(reg, tw.Email), 760, 640);
         await Task.Delay(900);
-        Save(twWin, Path.Combine(dir, "throwaway.png"));
+        await SaveAsync(twWin, Path.Combine(dir, "throwaway.png"));
         twWin.Close();
         var twSettings = OffScreen(new Views.SettingsWindow(reg, "Throwaway addresses"), 1040, 900);
         await Task.Delay(150);
-        Save(twSettings, Path.Combine(dir, "settings-throwaway.png"));
+        await SaveAsync(twSettings, Path.Combine(dir, "settings-throwaway.png"));
         twSettings.Close();
         // The main window with the throwaway selected (countdown chip, card bar, its inbox in the middle): a Store screenshot.
         ThemeManager.Apply(ThemeMode.Dark);
@@ -169,14 +170,14 @@ public static class SelfTest
         main.AliasList.SelectedItem = reg.Aliases.First(x => x.Email == tw.Email);
         await Task.Delay(500);
         main.MessageList.SelectedIndex = 0;
-        await Task.Delay(500);
-        Save(main, Path.Combine(dir, "main-throwaway.png"));
+        await Task.Delay(1500);
+        await SaveAsync(main, Path.Combine(dir, "main-throwaway.png"));
         AppSettings.Current.Throwaways.Clear();
         RenderingWindows = true;
         try
         {
             var unlock = OffScreen(new Views.UnlockWindow(needPassword: true, needCode: true), 440, 520);
-            Save(unlock, Path.Combine(dir, "sign-in.png"));
+            await SaveAsync(unlock, Path.Combine(dir, "sign-in.png"));
             // The sign-in screen must never appear in screenshots or streams; ordinary windows only when asked.
             if (!CaptureGuard.IsExcluded(unlock)) return Fail("the sign-in window is visible to screen capture");
             if (CaptureGuard.IsExcluded(main) != AppSettings.Current.HideFromCapture) return Fail("main window capture setting not applied");
@@ -189,13 +190,13 @@ public static class SelfTest
         Outbox.Items.Add(new QueuedEmail { FromEmail = "demo1.x7k2@fastmail.com", AliasProvider = "fastmail", To = ["anna@example.net"], Cc = ["alex@example.org"], Subject = "Forum invite", Enabled = false });
         var outbox = OffScreen(new Views.OutboxWindow(reg), 1000, 520);
         await Task.Delay(150);
-        Save(outbox, Path.Combine(dir, "queue.png")); outbox.Close();
+        await SaveAsync(outbox, Path.Combine(dir, "queue.png")); outbox.Close();
         Outbox.Items.Clear();
         var create = OffScreen(new Views.NewAliasWindow(reg), 560, 660);
-        Save(create, Path.Combine(dir, "new-alias.png")); create.Close();
+        await SaveAsync(create, Path.Combine(dir, "new-alias.png")); create.Close();
         var compose = OffScreen(new Views.ComposeWindow(reg, Views.ComposeWindow.Mode.New, reg.Aliases[0], null), 900, 640);
-        await Task.Delay(400);
-        Save(compose, Path.Combine(dir, "compose.png")); compose.Close();
+        await Task.Delay(2000);   // the editor (WebView2) loads
+        await SaveAsync(compose, Path.Combine(dir, "compose.png")); compose.Close();
         main.Close();
         return Directory.GetFiles(dir, "*.png").Length == 14 || Fail("missing renders: " + Directory.GetFiles(dir, "*.png").Length);
     }
@@ -212,19 +213,56 @@ public static class SelfTest
         return w;
     }
 
-    private static void Save(System.Windows.Window w, string path)
+    private static async Task SaveAsync(System.Windows.Window w, string path)
     {
         var root = (System.Windows.FrameworkElement)w.Content;
         root.UpdateLayout();
-        var bmp = new System.Windows.Media.Imaging.RenderTargetBitmap((int)root.ActualWidth, (int)root.ActualHeight, 96, 96, System.Windows.Media.PixelFormats.Pbgra32);
+        // The root is drawn at its margin offset, so the picture includes the margin on both sides (or the right edge is cut).
+        var m = root.Margin;
+        double width = root.ActualWidth + m.Left + m.Right, height = root.ActualHeight + m.Top + m.Bottom;
+        var bmp = new System.Windows.Media.Imaging.RenderTargetBitmap((int)width, (int)height, 96, 96, System.Windows.Media.PixelFormats.Pbgra32);
         var bg = new System.Windows.Media.DrawingVisual();
-        using (var dc = bg.RenderOpen()) dc.DrawRectangle(w.Background, null, new System.Windows.Rect(0, 0, root.ActualWidth, root.ActualHeight));
+        using (var dc = bg.RenderOpen()) dc.DrawRectangle(w.Background, null, new System.Windows.Rect(0, 0, width, height));
         bmp.Render(bg);
         bmp.Render(root);
+        // WebView2 draws in a window of its own, which RenderTargetBitmap can't see: paste in its own capture instead.
+        foreach (var view in Descendants<Microsoft.Web.WebView2.Wpf.WebView2>(root))
+        {
+            if (view.CoreWebView2 is null || view.ActualWidth < 1 || view.ActualHeight < 1) continue;
+            using var shot = new MemoryStream();
+            await view.CoreWebView2.CapturePreviewAsync(Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Png, shot);
+            shot.Position = 0;
+            var img = System.Windows.Media.Imaging.BitmapFrame.Create(shot, System.Windows.Media.Imaging.BitmapCreateOptions.None, System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+            var at = view.TransformToAncestor(root).Transform(new System.Windows.Point(m.Left, m.Top));
+            var layer = new System.Windows.Media.DrawingVisual();
+            using (var dc = layer.RenderOpen()) dc.DrawImage(img, new System.Windows.Rect(at.X, at.Y, view.ActualWidth, view.ActualHeight));
+            bmp.Render(layer);
+        }
         var enc = new System.Windows.Media.Imaging.PngBitmapEncoder();
         enc.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bmp));
         using var f = File.Create(path);
         enc.Save(f);
+    }
+
+    /// <summary>The demo order e-mail shown in the reader renders (made-up shop and customer; JSON-escaped).</summary>
+    private const string DemoOrderHtml =
+        "<div style=\\\"font-family:Segoe UI,Arial,sans-serif;max-width:560px;color:#1f2937\\\">" +
+        "<h2 style=\\\"color:#0f766e;margin:0 0 12px\\\">Your order is on its way</h2>" +
+        "<p>Hi Alex,</p><p>Good news: order <b>#1042</b> left our warehouse today and should arrive on <b>Tuesday 14 October</b>.</p>" +
+        "<table style=\\\"border-collapse:collapse;width:100%;margin:12px 0\\\">" +
+        "<tr><td style=\\\"padding:6px 0;border-bottom:1px solid #e5e7eb\\\">Desk lamp, matte black</td><td style=\\\"text-align:right;border-bottom:1px solid #e5e7eb\\\">£34.00</td></tr>" +
+        "<tr><td style=\\\"padding:6px 0;border-bottom:1px solid #e5e7eb\\\">LED bulb, warm white (2)</td><td style=\\\"text-align:right;border-bottom:1px solid #e5e7eb\\\">£9.00</td></tr>" +
+        "<tr><td style=\\\"padding:6px 0\\\"><b>Total</b></td><td style=\\\"text-align:right\\\"><b>£43.00</b></td></tr></table>" +
+        "<p>You can track the parcel from your account at any time.</p><p>Thanks for shopping with us,<br>Example Shop</p></div>";
+
+    private static IEnumerable<T> Descendants<T>(System.Windows.DependencyObject parent) where T : System.Windows.DependencyObject
+    {
+        for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+            if (child is T hit) yield return hit;
+            foreach (var deeper in Descendants<T>(child)) yield return deeper;
+        }
     }
 
     // ---------- plumbing ----------

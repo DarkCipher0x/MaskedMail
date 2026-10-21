@@ -1,8 +1,64 @@
-# DarkCipher MaskedMail
+<p align="center">
+  <img src="src/DcxMaskedMail/Assets/logo.png" alt="MaskedMail logo" width="128">
+</p>
 
-A small Windows app for masked email. It creates and manages masked and throwaway addresses, gives each one its own
-folder, files incoming mail into that folder, and lets you write HTML email from any of them. Everything it stores is
-encrypted. It uses the same look and security model as DarkCipher ServerManagement.
+<h1 align="center">DarkCipher MaskedMail</h1>
+
+<p align="center">
+  <b>Masked and throwaway email for Windows, with a folder for every address and everything it stores encrypted.</b><br>
+  Fastmail · SimpleLogin and Proton Pass · addy.io · Firefox Relay · DuckDuckGo · your own domains · disposable inboxes
+</p>
+
+<p align="center">
+  <img alt="Version 0.3.2" src="https://img.shields.io/badge/version-0.3.2-2dd4bf">
+  <img alt="Windows 10/11 x64" src="https://img.shields.io/badge/Windows-10%20%7C%2011%20x64-0f172a">
+  <img alt=".NET 8 WPF" src="https://img.shields.io/badge/.NET-8%20WPF-512bd4">
+  <img alt="Licence MIT" src="https://img.shields.io/badge/licence-MIT-2dd4bf">
+  <img alt="Encrypted at rest" src="https://img.shields.io/badge/storage-AES--256--GCM-0f172a">
+  <img alt="13 services" src="https://img.shields.io/badge/services-13-2dd4bf">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/main-dark.png" alt="MaskedMail: masked addresses on the left, the address's own folder in the middle, the message on the right" width="900">
+</p>
+
+---
+
+MaskedMail is a small Windows app by **DarkCipher Systems**. It creates and manages masked and throwaway addresses,
+gives each one its own folder, files incoming mail into that folder, and lets you write HTML email from any of them.
+Everything it stores is encrypted. It shares its look and security model with DarkCipher ServerManagement.
+
+## Highlights
+
+- **Every masked-email service in one list.** Fastmail Masked Email, SimpleLogin (and Proton Pass), addy.io, Firefox
+  Relay and DuckDuckGo, side by side; create, note, turn off and delete, each with everything its API allows.
+- **Your own domains.** Forward Email, Cloudflare Email Routing, ImprovMX, Migadu and self-hosted mailcow.
+- **A folder per address.** Mail to each address is filed into `Inbox/automation/<address>` automatically.
+- **Throwaway addresses in one click** that end themselves after 10 minutes to 30 days, with a live inbox that picks
+  out verification codes and links.
+- **Write from any address.** A light HTML editor with images, attachments, copies and an outgoing queue.
+- **Encrypted and locked down.** AES-256-GCM storage, master password, TOTP 2FA, app lock, sandbox
+  mode, a hash-chained security log, and no telemetry or account of its own.
+- **Add-ons, safely.** Sandboxed at Low integrity, talking to the app only over an encrypted bridge.
+
+## Screenshots
+
+| | |
+|---|---|
+| <img src="docs/screenshots/main-throwaway.png" alt="A throwaway address with its countdown and its inbox"> | <img src="docs/screenshots/main-light.png" alt="The light theme"> |
+| **Throwaway addresses** count down and end themselves | **Light theme**, or follow Windows |
+| <img src="docs/screenshots/throwaway.png" alt="The throwaway live inbox picking out a verification code"> | <img src="docs/screenshots/new-alias.png" alt="Creating a new masked address"> |
+| **Live inbox** picks out codes and confirmation links | **New address** on any service, with its own folder |
+| <img src="docs/screenshots/compose.png" alt="The HTML composer sending from a masked address"> | <img src="docs/screenshots/queue.png" alt="The outgoing queue"> |
+| **Write from any address** in a light HTML editor | **Outgoing queue**: copies, one per recipient, send all |
+| <img src="docs/screenshots/settings.png" alt="Security and privacy settings"> | <img src="docs/screenshots/settings-masked.png" alt="Masked-email service settings"> |
+| **Security first**: master password, 2FA, app lock, backups | **Masked-email services** set up in one place |
+| <img src="docs/screenshots/settings-domains.png" alt="Own-domain service settings"> | <img src="docs/screenshots/settings-disposable.png" alt="Disposable inbox settings with their caution"> |
+| **Your own domains**: Forward Email, Cloudflare, ImprovMX, Migadu, mailcow | **Disposable inboxes**: off until you tick them, with a plain caution |
+| <img src="docs/screenshots/settings-throwaway.png" alt="Throwaway settings"> | <img src="docs/screenshots/sign-in.png" alt="The encrypted sign-in screen" width="300"> |
+| **Throwaway settings**: service, lifetime, what happens at expiry | **Sign-in** with master password and 2FA (never visible to screen capture) |
+
+*Screenshots are rendered by the build's self-test from demo data.*
 
 ## Documentation
 

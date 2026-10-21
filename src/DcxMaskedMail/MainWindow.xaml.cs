@@ -712,6 +712,9 @@ public partial class MainWindow : Window
         await NavigateReaderAsync(page);
     }
 
+    /// <summary>The self-test's renders: the message viewer without the tray and timers of <see cref="StartBackground"/>.</summary>
+    internal Task InitReaderForTestAsync() => InitReaderAsync();
+
     private async Task InitReaderAsync()
     {
         try
