@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Addresses on your own domains: Forward Email, Cloudflare Email Routing, ImprovMX, Migadu and mailcow (self-hosted). One file per service. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail.Providers</RootNamespace>
+    <AssemblyName>DcxMail.Providers.Domains</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Providers\DcxMail.Providers.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DcxMail.Tests" />
+  </ItemGroup>
+</Project>

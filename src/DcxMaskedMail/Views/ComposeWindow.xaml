@@ -1,0 +1,122 @@
+<Window x:Class="DcxMail.Views.ComposeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="New email — DarkCipher MaskedMail" Height="760" Width="900" MinHeight="460" MinWidth="680"
+        WindowStartupLocation="CenterOwner" Icon="/Assets/app.ico" FontFamily="{DynamicResource UiFont}" FontSize="{DynamicResource FsBase}"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Fg}" Closing="OnClosing">
+    <Window.Resources>
+        <Style x:Key="Tool" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="MinWidth" Value="30"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="Margin" Value="0,0,3,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style x:Key="ToolToggle" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="MinWidth" Value="30"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="Margin" Value="0,0,3,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style x:Key="Sep" TargetType="Border">
+            <Setter Property="Width" Value="1"/>
+            <Setter Property="Margin" Value="4,3,7,3"/>
+            <Setter Property="Background" Value="{DynamicResource Line}"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <!-- Header fields -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1" Padding="14,10,14,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="FROM" Style="{StaticResource Label}" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" x:Name="FromBox" Margin="0,0,0,4" SelectionChanged="OnFromChanged" IsTextSearchEnabled="True"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="FromHint" Style="{StaticResource Hint}" FontSize="{DynamicResource FsMeta}" Margin="2,0,0,6"/>
+                <TextBlock Grid.Row="2" Text="TO" Style="{StaticResource Label}" VerticalAlignment="Center"/>
+                <DockPanel Grid.Row="2" Grid.Column="1" Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" x:Name="CcToggle" Content="Cc" Style="{StaticResource SmallButton}" Margin="6,0,0,0" Click="OnShowCc"/>
+                    <TextBox x:Name="ToBox" Padding="5,4" ToolTip="Separate several addresses with , or ;"/>
+                </DockPanel>
+                <TextBlock Grid.Row="3" x:Name="CcLabel" Text="CC" Style="{StaticResource Label}" VerticalAlignment="Center" Visibility="Collapsed"/>
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="CcBox" Padding="5,4" Margin="0,0,0,6" Visibility="Collapsed"/>
+                <TextBlock Grid.Row="4" Text="SUBJECT" Style="{StaticResource Label}" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="4" Grid.Column="1" x:Name="SubjectBox" Padding="5,4" Margin="0,0,0,4" TextChanged="OnSubjectChanged"/>
+                <WrapPanel Grid.Row="5" Grid.Column="1" x:Name="AttachList" Margin="0,2,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- Send bar -->
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Line}" BorderThickness="0,1,0,0" Padding="14,8">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="Discard" Click="OnDiscard" Margin="0"/>
+                <Button DockPanel.Dock="Right" x:Name="SendBtn" Content="➤  Send" Style="{StaticResource PrimaryButton}" Click="OnSend" ToolTip="Send now (Ctrl+Enter)"/>
+                <Button DockPanel.Dock="Right" x:Name="QueueBtn" Content="⏸  Add to queue" Click="OnQueue" ToolTip="Keep it in the outgoing queue and send it later with the others (Ctrl+Shift+Enter)"/>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
+                    <CheckBox x:Name="SplitBox" Content="separate copy per recipient" VerticalAlignment="Center" Margin="0,0,14,0"
+                              ToolTip="Each person in To and Cc gets their own copy, without seeing the others"/>
+                    <TextBlock Text="COPIES" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox x:Name="CopiesBox" Text="1" Width="44" Padding="4,3" HorizontalContentAlignment="Center" VerticalAlignment="Center"
+                             ToolTip="How many identical copies to send (1–50)"/>
+                </StackPanel>
+                <TextBlock x:Name="SendStatus" VerticalAlignment="Center" Foreground="{DynamicResource Muted}" TextTrimming="CharacterEllipsis" FontSize="{DynamicResource FsMeta}"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Formatting toolbar -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource Bg}" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1" Padding="10,5">
+            <WrapPanel>
+                <ComboBox x:Name="FontBox" Width="150" Margin="0,0,4,0" Focusable="False" SelectionChanged="OnFont" ToolTip="Font"/>
+                <ComboBox x:Name="SizeBox" Width="82" Margin="0,0,6,0" Focusable="False" SelectionChanged="OnSize" ToolTip="Text size"/>
+                <Border Style="{StaticResource Sep}"/>
+                <ToggleButton x:Name="BoldBtn" Style="{StaticResource ToolToggle}" Tag="bold" Click="OnCmd" ToolTip="Bold (Ctrl+B)"><TextBlock Text="B" FontWeight="Bold"/></ToggleButton>
+                <ToggleButton x:Name="ItalicBtn" Style="{StaticResource ToolToggle}" Tag="italic" Click="OnCmd" ToolTip="Italic (Ctrl+I)"><TextBlock Text="I" FontStyle="Italic" FontFamily="Georgia"/></ToggleButton>
+                <ToggleButton x:Name="UnderBtn" Style="{StaticResource ToolToggle}" Tag="underline" Click="OnCmd" ToolTip="Underline (Ctrl+U)"><TextBlock Text="U" TextDecorations="Underline"/></ToggleButton>
+                <ToggleButton x:Name="StrikeBtn" Style="{StaticResource ToolToggle}" Tag="strikeThrough" Click="OnCmd" ToolTip="Strikethrough"><TextBlock Text="S" TextDecorations="Strikethrough"/></ToggleButton>
+                <Button Style="{StaticResource Tool}" Click="OnTextColour" ToolTip="Text colour"><StackPanel><TextBlock Text="A" FontWeight="Bold" HorizontalAlignment="Center"/><Border x:Name="ColourBar" Height="3" Width="14" Background="#E53935"/></StackPanel></Button>
+                <Button Style="{StaticResource Tool}" Click="OnHighlight" ToolTip="Highlight"><StackPanel><TextBlock Text="✎" HorizontalAlignment="Center"/><Border x:Name="HighlightBar" Height="3" Width="14" Background="#FFF176"/></StackPanel></Button>
+                <Border Style="{StaticResource Sep}"/>
+                <ToggleButton x:Name="UlBtn" Style="{StaticResource ToolToggle}" Tag="insertUnorderedList" Click="OnCmd" Content="• ≡" ToolTip="Bulleted list"/>
+                <ToggleButton x:Name="OlBtn" Style="{StaticResource ToolToggle}" Tag="insertOrderedList" Click="OnCmd" Content="1. ≡" ToolTip="Numbered list"/>
+                <Button Style="{StaticResource Tool}" Tag="outdent" Click="OnCmd" Content="⇤" ToolTip="Decrease indent"/>
+                <Button Style="{StaticResource Tool}" Tag="indent" Click="OnCmd" Content="⇥" ToolTip="Increase indent"/>
+                <Button Style="{StaticResource Tool}" Tag="justifyLeft" Click="OnCmd" Content="⯇≡" ToolTip="Align left"/>
+                <Button Style="{StaticResource Tool}" Tag="justifyCenter" Click="OnCmd" Content="≡" ToolTip="Centre"/>
+                <Button Style="{StaticResource Tool}" Tag="justifyRight" Click="OnCmd" Content="≡⯈" ToolTip="Align right"/>
+                <Button Style="{StaticResource Tool}" Tag="formatBlock:blockquote" Click="OnCmd" Content="❝" ToolTip="Quote"/>
+                <Border Style="{StaticResource Sep}"/>
+                <Button Style="{StaticResource Tool}" Click="OnLink" Content="🔗" ToolTip="Insert link (Ctrl+K)"/>
+                <Button Style="{StaticResource Tool}" Tag="unlink" Click="OnCmd" Content="⊘" ToolTip="Remove link"/>
+                <Button Style="{StaticResource Tool}" Click="OnImage" Content="🖼" ToolTip="Insert image (or paste / drag one in)"/>
+                <Button x:Name="ImgSmall" Style="{StaticResource Tool}" Click="OnImgSize" Tag="33" Content="⅓" ToolTip="Selected image: one third width" Visibility="Collapsed"/>
+                <Button x:Name="ImgHalf" Style="{StaticResource Tool}" Click="OnImgSize" Tag="50" Content="½" ToolTip="Selected image: half width" Visibility="Collapsed"/>
+                <Button x:Name="ImgFull" Style="{StaticResource Tool}" Click="OnImgSize" Tag="100" Content="1:1" ToolTip="Selected image: full width" Visibility="Collapsed"/>
+                <Button Style="{StaticResource Tool}" Click="OnAttach" Content="📎" ToolTip="Attach files"/>
+                <Button Style="{StaticResource Tool}" Tag="insertHorizontalRule" Click="OnCmd" Content="―" ToolTip="Horizontal line"/>
+                <Border Style="{StaticResource Sep}"/>
+                <Button Style="{StaticResource Tool}" Tag="undo" Click="OnCmd" Content="↶" ToolTip="Undo (Ctrl+Z)"/>
+                <Button Style="{StaticResource Tool}" Tag="redo" Click="OnCmd" Content="↷" ToolTip="Redo (Ctrl+Y)"/>
+                <Button Style="{StaticResource Tool}" Tag="removeFormat" Click="OnCmd" Content="T̸" ToolTip="Clear formatting"/>
+            </WrapPanel>
+        </Border>
+
+        <!-- Editor -->
+        <Border Margin="14,10,14,10" BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="2" Background="White">
+            <wv2:WebView2 x:Name="Editor" DefaultBackgroundColor="White"/>
+        </Border>
+    </DockPanel>
+</Window>

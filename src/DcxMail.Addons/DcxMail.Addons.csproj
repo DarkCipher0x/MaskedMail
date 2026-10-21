@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Add-ons (same model as DarkCipher ServerManagement): packages, the Low-integrity sandbox process, the encrypted
+       bridge, the run loop and its methods, and theme add-ons. No UI: the app plugs its dialogs in (AddonHost.Ui). -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail</RootNamespace>
+    <AssemblyName>DcxMail.Addons</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Aliases\DcxMail.Aliases.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DcxMaskedMail" />
+    <InternalsVisibleTo Include="DcxMail.Tests" />
+  </ItemGroup>
+</Project>

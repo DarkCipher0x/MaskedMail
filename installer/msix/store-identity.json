@@ -1,0 +1,6 @@
+{
+  "_comment": "Copy these three values from Partner Center -> your app -> Product management -> Product identity. Until they are filled in, tools\\make-msix.ps1 only validates (-Check) or makes a local test package (-TestSign).",
+  "IdentityName": "",
+  "Publisher": "",
+  "PublisherDisplayName": ""
+}

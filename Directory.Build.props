@@ -1,0 +1,53 @@
+<Project>
+  <!-- Shared by every project in the solution: one version, one set of rules. -->
+  <PropertyGroup>
+    <!-- Bump this one line for every build (each release goes to dist\<version>\; old ones are kept). -->
+    <Version>0.3.1</Version>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+
+    <Product>DarkCipher MaskedMail</Product>
+    <Authors>darkcipher0x</Authors>
+    <Company>darkcipher0x</Company>
+    <Copyright>Copyright © 2026 darkcipher0x</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Quality gates: every warning is an error; .NET's analyzers on, with every security rule. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisModeSecurity>All</AnalysisModeSecurity>
+    <AnalysisModeReliability>Recommended</AnalysisModeReliability>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+    <!-- Supply chain: exact versions in lock files (restore fails if they drift) and a vulnerability audit of every
+         package, direct or transitive; a known-vulnerable package fails the build (warnings are errors). -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+
+    <!-- Keep local build paths (user name) out of compiled code. -->
+    <PathMap>$(MSBuildProjectDirectory)=/_/$(MSBuildProjectName)/</PathMap>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Release builds ship no symbols (no .pdb with local paths). Tests keep them for readable stack traces. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Native DLLs resolve from System32 only (CA5392; see the file). -->
+    <Compile Include="$(MSBuildThisFileDirectory)src\Shared\DllSearchPaths.cs" Link="Shared\DllSearchPaths.cs" />
+  </ItemGroup>
+</Project>

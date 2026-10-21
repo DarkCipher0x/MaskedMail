@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Only the script below runs (a fresh nonce for every load, filled in by the app): inline event handlers and
+     javascript: URLs in quoted mail can't execute, even if something got past the sanitizers. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src {{IMG}}; style-src 'unsafe-inline'; script-src 'nonce-{{NONCE}}'; base-uri 'none'; form-action 'none'">
+
+<style>
+  html, body { margin: 0; height: 100%; background: #ffffff; }
+  #ed { box-sizing: border-box; min-height: 100%; padding: 16px 20px; outline: none; color: #111;
+        font-family: 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.45; word-wrap: break-word; }
+  #ed img { max-width: 100%; height: auto; }
+  #ed img.sel { outline: 2px solid #36D2CB; }
+  #ed blockquote { border-left: 3px solid #ccc; margin: 0 0 0 4px; padding-left: 10px; color: #444; }
+  #ed:empty:before { content: attr(data-placeholder); color: #999; }
+  #drop { display: none; position: fixed; inset: 8px; border: 2px dashed #36D2CB; border-radius: 4px;
+          background: rgba(54,210,203,.08); color: #0b6e69; font: 600 15px 'Segoe UI'; align-items: center; justify-content: center; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="ed" contenteditable="true" spellcheck="true" data-placeholder="Write your message…"></div>
+<div id="drop">Drop images to insert them</div>
+<script nonce="{{NONCE}}">
+  const ed = document.getElementById('ed');
+  document.execCommand('styleWithCSS', false, true);
+  document.execCommand('defaultParagraphSeparator', false, 'div');
+  let saved = null;
+
+  function post(m) { try { window.chrome.webview.postMessage(m); } catch (e) {} }
+  function keep() { const s = getSelection(); if (s.rangeCount && ed.contains(s.anchorNode)) saved = s.getRangeAt(0).cloneRange(); }
+  function restore() { ed.focus(); if (saved) { const s = getSelection(); s.removeAllRanges(); s.addRange(saved); } }
+  document.addEventListener('selectionchange', () => { keep(); state(); });
+
+  function cmd(name, value) { restore(); document.execCommand(name, false, value ?? null); keep(); state(); post('dirty'); }
+  // HTML that comes from outside (a quoted or queued message) is parsed inertly and cleaned before it enters the page:
+  // no scripting elements, no event handlers, no script URLs.
+  const DROP = 'script,iframe,frame,frameset,object,embed,applet,form,input,button,textarea,select,meta,base,link,svg,math,template,noscript,portal';
+  function clean(html) {
+    const doc = new DOMParser().parseFromString('<body>' + html, 'text/html');
+    doc.querySelectorAll(DROP).forEach(n => n.remove());
+    doc.querySelectorAll('*').forEach(el => {
+      for (const a of [...el.attributes]) {
+        const n = a.name.toLowerCase(), v = a.value.replace(/[\s\u0000-\u001f]/g, '').toLowerCase();
+        if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction') el.removeAttribute(a.name);
+        else if (/^(href|src|action|xlink:href|background|data|poster)$/.test(n) && /^(javascript|vbscript|data:text\/html)/.test(v)) el.removeAttribute(a.name);
+      }
+    });
+    return doc.body.innerHTML;
+  }
+  function setHtml(html) { ed.innerHTML = clean(html); post('dirty'); }
+  function getHtml() { return ed.innerHTML; }
+  function setDefaults(font, size) { ed.style.fontFamily = font; ed.style.fontSize = ({1:'10px',2:'12px',3:'14px',4:'17px',5:'20px',6:'26px',7:'34px'})[size] || '14px'; }
+  function focusStart() { ed.focus(); const r = document.createRange(); r.setStart(ed, 0); r.collapse(true); const s = getSelection(); s.removeAllRanges(); s.addRange(r); keep(); }
+  function insertHtml(html) { restore(); document.execCommand('insertHTML', false, html); keep(); post('dirty'); }
+  function insertImage(dataUrl, name) {
+    insertHtml('<img src="' + dataUrl + '" alt="' + (name || 'image').replace(/"/g, '') + '" style="max-width:100%">');
+  }
+  function link(url) {
+    restore();
+    const s = getSelection();
+    if (s.isCollapsed) insertHtml('<a href="' + url.replace(/"/g, '%22') + '">' + url.replace(/</g, '&lt;') + '</a>');
+    else document.execCommand('createLink', false, url);
+    post('dirty');
+  }
+  function state() {
+    const q = n => { try { return document.queryCommandState(n); } catch (e) { return false; } };
+    post(JSON.stringify({ t: 'state', b: q('bold'), i: q('italic'), u: q('underline'), s: q('strikeThrough'),
+      ul: q('insertUnorderedList'), ol: q('insertOrderedList') }));
+  }
+
+  function readImages(files) {
+    for (const f of files) {
+      if (!f.type.startsWith('image/')) { post(JSON.stringify({ t: 'notimage', name: f.name })); continue; }
+      if (f.size > 15 * 1024 * 1024) { post(JSON.stringify({ t: 'toobig', name: f.name })); continue; }
+      const r = new FileReader();
+      r.onload = () => insertImage(r.result, f.name);
+      r.readAsDataURL(f);
+    }
+  }
+  ed.addEventListener('paste', e => {
+    const files = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
+    if (files.length) { e.preventDefault(); keep(); readImages(files); }
+  });
+  const drop = document.getElementById('drop');
+  document.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('Files')) { e.preventDefault(); drop.style.display = 'flex'; } });
+  document.addEventListener('dragleave', e => { if (!e.relatedTarget) drop.style.display = 'none'; });
+  document.addEventListener('drop', e => {
+    drop.style.display = 'none';
+    if (e.dataTransfer.files.length) {
+      e.preventDefault();
+      const pos = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+      if (pos && ed.contains(pos.startContainer)) saved = pos;
+      readImages(e.dataTransfer.files);
+    }
+  });
+  // Click an image to select it; then the size buttons resize it.
+  let selImg = null;
+  ed.addEventListener('click', e => {
+    if (selImg) selImg.classList.remove('sel');
+    selImg = e.target.tagName === 'IMG' ? e.target : null;
+    if (selImg) selImg.classList.add('sel');
+    post(JSON.stringify({ t: 'img', on: !!selImg }));
+  });
+  function imgWidth(pct) { if (selImg) { selImg.style.width = pct + '%'; selImg.style.maxWidth = '100%'; selImg.style.height = 'auto'; post('dirty'); } }
+  function cleanHtml() {
+    const c = ed.cloneNode(true);
+    c.querySelectorAll('img.sel').forEach(i => { i.classList.remove('sel'); if (!i.className) i.removeAttribute('class'); });
+    const font = ed.style.fontFamily, size = ed.style.fontSize;
+    return '<div style="font-family:' + font.replace(/"/g, "'") + ';font-size:' + size + ';color:#111;">' + c.innerHTML + '</div>';
+  }
+  ed.addEventListener('input', () => post('dirty'));
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); post('send'); }
+    if (e.ctrlKey && e.key.toLowerCase() === 'k') { e.preventDefault(); post('link'); }
+  });
+  // Links inside the editor never navigate.
+  document.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); });
+  post('ready');
+</script>
+</body>
+</html>

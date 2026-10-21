@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Your addresses, put together: Fastmail Masked Email (the mailbox everything is built around), the catalog of every
+       other service, the registry that builds the configured ones and owns routing, throwaway addresses, and the
+       outgoing queue. The other services live in DcxMail.Providers.Masked, .Domains and .Disposable. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail</RootNamespace>
+    <AssemblyName>DcxMail.Aliases</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Mail\DcxMail.Mail.csproj" />
+    <ProjectReference Include="..\DcxMail.Providers\DcxMail.Providers.csproj" />
+    <ProjectReference Include="..\DcxMail.Providers.Masked\DcxMail.Providers.Masked.csproj" />
+    <ProjectReference Include="..\DcxMail.Providers.Domains\DcxMail.Providers.Domains.csproj" />
+    <ProjectReference Include="..\DcxMail.Providers.Disposable\DcxMail.Providers.Disposable.csproj" />
+  </ItemGroup>
+</Project>

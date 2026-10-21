@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The foundation, with no UI: encrypted storage (key ring, master password, TOTP), settings, the security and error
+       logs, backups, the hardened HTTP factory, folder ACLs, process mitigations and MSIX packaging detection. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail</RootNamespace>
+    <AssemblyName>DcxMail.Core</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DcxMaskedMail" />
+    <InternalsVisibleTo Include="DcxMail.Tests" />
+  </ItemGroup>
+</Project>

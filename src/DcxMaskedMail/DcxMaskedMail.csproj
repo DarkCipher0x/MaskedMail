@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The WPF app: windows, views, theme, lock screen and tray. The logic lives in the DcxMail.* libraries; shared build
+       rules (version, analyzers, lock files, NuGet audit) are in Directory.Build.props at the repository root. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the notification-area icon (NotifyIcon) that keeps routing running while the window is closed -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>DcxMaskedMail</AssemblyName>
+    <RootNamespace>DcxMail</RootNamespace>
+    <AssemblyTitle>DarkCipher MaskedMail - masked email manager and lightweight mail client</AssemblyTitle>
+    <Description>Create and manage masked and throwaway email addresses (Fastmail, SimpleLogin, addy.io, Firefox Relay), file their mail into folders and send from them.</Description>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\logo.png" />
+    <None Remove="Assets\web\**" />
+    <EmbeddedResource Include="Assets\web\**" LogicalName="web/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" />
+    <PackageReference Include="QRCoder" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Core\DcxMail.Core.csproj" />
+    <ProjectReference Include="..\DcxMail.Mail\DcxMail.Mail.csproj" />
+    <ProjectReference Include="..\DcxMail.Aliases\DcxMail.Aliases.csproj" />
+    <ProjectReference Include="..\DcxMail.Addons\DcxMail.Addons.csproj" />
+    <!-- In-process fake servers for the self-test renders (no network) -->
+    <ProjectReference Include="..\DcxMail.Fakes\DcxMail.Fakes.csproj" />
+  </ItemGroup>
+
+  <Target Name="TrimPublishDocs" AfterTargets="Publish">
+    <Delete Files="$(PublishDir)Microsoft.Web.WebView2.Core.xml;$(PublishDir)Microsoft.Web.WebView2.WinForms.xml;$(PublishDir)Microsoft.Web.WebView2.Wpf.xml" />
+  </Target>
+</Project>

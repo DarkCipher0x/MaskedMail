@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Disposable inboxes the app reads itself: Mail.tm (and Mail.gw), TempMail.lol and DropMail. One file per service. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail.Providers</RootNamespace>
+    <AssemblyName>DcxMail.Providers.Disposable</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Providers\DcxMail.Providers.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DcxMail.Tests" />
+  </ItemGroup>
+</Project>

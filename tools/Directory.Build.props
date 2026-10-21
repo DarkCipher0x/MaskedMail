@@ -1,0 +1,7 @@
+<Project>
+  <!-- Build helpers (the restore-only MSIX tool fetcher) stand alone: the solution's shared rules in the root
+       Directory.Build.props / Directory.Packages.props are for the product code, not for these. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

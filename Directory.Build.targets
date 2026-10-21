@@ -1,0 +1,8 @@
+<Project>
+  <!-- Imported after the SDK has added its implicit usings (Directory.Build.props runs too early for this).
+       WPF is the UI: never pull WinForms types in implicitly (Button, Application, Color, ... would clash). -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+</Project>

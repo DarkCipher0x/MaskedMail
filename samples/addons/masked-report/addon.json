@@ -1,0 +1,17 @@
+{
+  "api": 2,
+  "id": "com.darkcipher.maskedmail.masked-report",
+  "name": "Masked address report",
+  "version": "1.0.0",
+  "publisher": "DarkCipher Systems (sample)",
+  "description": "Summarises your masked addresses by service and state, shows the newest mail for the selected address, and queues a test email from it. A starting point for your own add-ons.",
+  "entry": "run.ps1",
+  "timeoutSeconds": 60,
+  "permissions": ["aliases.read", "mail.read", "queue.write"],
+  "commands": [
+    { "id": "summary", "title": "Masked address summary", "context": "global" },
+    { "id": "latest", "title": "Newest mail for this address", "context": "alias" },
+    { "id": "queue-test", "title": "Queue a test email from this address", "context": "alias" },
+    { "id": "capabilities", "title": "What can add-ons call?", "context": "global" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "api": 2,
+  "id": "com.darkcipher.maskedmail.midnight-theme",
+  "name": "Midnight blue theme",
+  "version": "1.0.0",
+  "publisher": "DarkCipher Systems (sample)",
+  "description": "A sample colour theme: deep navy surfaces with an electric blue accent. Data only: no program runs, and its file is encrypted on disk once installed.",
+  "theme": "theme.json"
+}

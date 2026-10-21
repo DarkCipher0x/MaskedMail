@@ -1,0 +1,16 @@
+{
+  "name": "Midnight blue",
+  "notes": "Sample theme for DarkCipher MaskedMail. Keys: Bg, Surface, Input, Fg, Muted, Line, Hover, Track, ScrollThumb, HeaderBg, HeaderFg, Good, Warn, Bad, Accent, AccentHover, OnAccent, Brand.",
+  "colors": {
+    "Bg":          { "dark": "#070B16", "light": "#F2F5FB" },
+    "Surface":     { "dark": "#0D1424", "light": "#E4EAF5" },
+    "Input":       { "dark": "#04070F", "light": "#FBFCFF" },
+    "Fg":          { "dark": "#DCE6FA", "light": "#0B1324" },
+    "Muted":       { "dark": "#6E80A8", "light": "#4D5D80" },
+    "Line":        { "dark": "#1B2742", "light": "#C2CDE3" },
+    "Hover":       { "dark": "#121C33", "light": "#D7E0F0" },
+    "HeaderBg":    { "dark": "#03050C", "light": "#0B1324" },
+    "Accent":      { "dark": "#4C8DFF", "light": "#1F4FB0" },
+    "Brand":       { "dark": "#4C8DFF", "light": "#4C8DFF" }
+  }
+}

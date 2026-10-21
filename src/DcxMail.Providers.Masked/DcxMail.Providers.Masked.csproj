@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Masked-email services that forward to your real mailbox: SimpleLogin, addy.io, Firefox Relay and DuckDuckGo. One file per service. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail.Providers</RootNamespace>
+    <AssemblyName>DcxMail.Providers.Masked</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Providers\DcxMail.Providers.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DcxMail.Tests" />
+  </ItemGroup>
+</Project>

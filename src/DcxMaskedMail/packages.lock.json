@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net8.0-windows10.0.19041": {
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.32, )",
+        "resolved": "8.0.32",
+        "contentHash": "FQXkG87JK9+SEbF6vRcWmevk0Pjqgehhz+9e1hHATDh7U8EvgmVQQcEUJTXj1IKi8VqLrdi/c1QHOpVjZcd9ng=="
+      },
+      "Microsoft.Web.WebView2": {
+        "type": "Direct",
+        "requested": "[1.0.2903.40, )",
+        "resolved": "1.0.2903.40",
+        "contentHash": "THrzYAnJgE3+cNH+9Epr44XjoZoRELdVpXlWGPs6K9C9G6TqyDfVCeVAR/Er8ljLitIUX5gaSkPsy9wRhD1sgQ=="
+      },
+      "QRCoder": {
+        "type": "Direct",
+        "requested": "[1.6.0, )",
+        "resolved": "1.6.0",
+        "contentHash": "XmPA81eo+oRxBuyVdswsSkTGTE1d3thfF11Z1PdD7oB56A6HU4G4AAOdySmGRMb/cljwlFTMWUtosGEnwpS6GA==",
+        "dependencies": {
+          "System.Drawing.Common": "6.0.0"
+        }
+      },
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "hqTM5628jSsQiv+HGpiq3WKBl2c8v1KZfby2J6Pr7pEPlK9waPdgEO6b8A/+/xn/yZ9ulv8HuqK71ONy2tg67A=="
+      },
+      "System.Drawing.Common": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "NfuoKUiP2nUWwKZN6twGqXioIe1zVD0RIj2t976A+czLHr2nY454RwwXs6JU9Htc6mwqL6Dn/nEL3dpVf2jOhg==",
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "6.0.0"
+        }
+      },
+      "dcxmail.addons": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Aliases": "[0.2.1, )"
+        }
+      },
+      "dcxmail.aliases": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Mail": "[0.2.1, )",
+          "DcxMail.Providers": "[0.2.1, )",
+          "DcxMail.Providers.Disposable": "[0.2.1, )",
+          "DcxMail.Providers.Domains": "[0.2.1, )",
+          "DcxMail.Providers.Masked": "[0.2.1, )"
+        }
+      },
+      "dcxmail.core": {
+        "type": "Project",
+        "dependencies": {
+          "System.Security.Cryptography.ProtectedData": "[8.0.0, )"
+        }
+      },
+      "dcxmail.fakes": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Mail": "[0.2.1, )"
+        }
+      },
+      "dcxmail.mail": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Core": "[0.2.1, )"
+        }
+      },
+      "dcxmail.providers": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Mail": "[0.2.1, )"
+        }
+      },
+      "dcxmail.providers.disposable": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Providers": "[0.2.1, )"
+        }
+      },
+      "dcxmail.providers.domains": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Providers": "[0.2.1, )"
+        }
+      },
+      "dcxmail.providers.masked": {
+        "type": "Project",
+        "dependencies": {
+          "DcxMail.Providers": "[0.2.1, )"
+        }
+      },
+      "System.Security.Cryptography.ProtectedData": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "+TUFINV2q2ifyXauQXRwy4CiBhqvDEDZeVJU7qfxya4aRYOKzVBpN+4acx25VcPB9ywUN6C0n8drWl110PhZEg=="
+      }
+    },
+    "net8.0-windows10.0.19041/win-x64": {
+      "Microsoft.Web.WebView2": {
+        "type": "Direct",
+        "requested": "[1.0.2903.40, )",
+        "resolved": "1.0.2903.40",
+        "contentHash": "THrzYAnJgE3+cNH+9Epr44XjoZoRELdVpXlWGPs6K9C9G6TqyDfVCeVAR/Er8ljLitIUX5gaSkPsy9wRhD1sgQ=="
+      },
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "hqTM5628jSsQiv+HGpiq3WKBl2c8v1KZfby2J6Pr7pEPlK9waPdgEO6b8A/+/xn/yZ9ulv8HuqK71ONy2tg67A=="
+      },
+      "System.Drawing.Common": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "NfuoKUiP2nUWwKZN6twGqXioIe1zVD0RIj2t976A+czLHr2nY454RwwXs6JU9Htc6mwqL6Dn/nEL3dpVf2jOhg==",
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "6.0.0"
+        }
+      }
+    }
+  }
+}

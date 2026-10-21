@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Mail: the Fastmail JMAP client (session, batched calls, blobs), folders, the routing sweep, reading and sending,
+       and the HTML tools (sanitizer, inline images, plain-text alternative, reader page). -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail</RootNamespace>
+    <AssemblyName>DcxMail.Mail</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Core\DcxMail.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Unit and integration tests for the libraries: the store and its security, the HTML tools, every provider against
+       in-process fakes, throwaways, the queue and add-ons (the real sandbox and bridge). No network, no window, never the
+       real data folder (see TestEnv). Run with: dotnet test DarkCipher.MaskedMail.sln -c Release -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail.Tests</RootNamespace>
+    <AssemblyName>DcxMail.Tests</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- Readable stack traces in failures (never shipped). -->
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DcxMail.Core\DcxMail.Core.csproj" />
+    <ProjectReference Include="..\..\src\DcxMail.Mail\DcxMail.Mail.csproj" />
+    <ProjectReference Include="..\..\src\DcxMail.Aliases\DcxMail.Aliases.csproj" />
+    <ProjectReference Include="..\..\src\DcxMail.Addons\DcxMail.Addons.csproj" />
+    <ProjectReference Include="..\..\src\DcxMail.Fakes\DcxMail.Fakes.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The add-on SDK: the add-on tests build real packages with it. -->
+    <None Include="..\..\samples\addons\sdk\DcxBridge.dll" Link="sdk\DcxBridge.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\samples\addons\sdk\DcxAddon.ps1" Link="sdk\DcxAddon.ps1" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

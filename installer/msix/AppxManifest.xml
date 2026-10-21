@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MSIX manifest for the Microsoft Store build (same approach as DarkCipher ServerManagement). tools\make-msix.ps1
+     fills the $(...) tokens. Full-trust desktop app; file-system and registry write virtualization are OFF so a Store
+     install uses the same per-user folders as the MSI (%APPDATA%\DarkCipher\MaskedMail): one encrypted store, whichever
+     installer you used, and uninstalling never deletes it. Both need the restricted capabilities declared below (Store
+     justification text: installer\msix\STORE-SUBMISSION.md). "Start with Windows" is the startup task below: a registry
+     Run entry can't start a packaged app. -->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap desktop desktop6 rescap">
+
+  <Identity Name="$(IdentityName)" Publisher="$(Publisher)" Version="$(Version)" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>DarkCipher MaskedMail</DisplayName>
+    <PublisherDisplayName>$(PublisherDisplayName)</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+    <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
+    <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.18362.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-GB" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="DcxMaskedMail.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="DarkCipher MaskedMail"
+        Description="Masked and throwaway email addresses with a lightweight, encrypted mail client for Fastmail, SimpleLogin, addy.io and Firefox Relay."
+        BackgroundColor="transparent"
+        Square150x150Logo="Images\Square150x150Logo.png"
+        Square44x44Logo="Images\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <!-- "Start with Windows" (Settings → Appearance & behaviour). Off until the user turns it on; Windows lists it in
+             Task Manager → Startup apps. The app starts in the notification area when launched this way. -->
+        <desktop:Extension Category="windows.startupTask" Executable="DcxMaskedMail.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="MaskedMailStartup" Enabled="false" DisplayName="DarkCipher MaskedMail" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <rescap:Capability Name="unvirtualizedResources" />
+  </Capabilities>
+</Package>

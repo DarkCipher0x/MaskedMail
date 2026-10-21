@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- In-process fake servers (Fastmail JMAP, and a REST fake for SimpleLogin / addy.io / Firefox Relay). Used by the
+       unit tests and by the app self-test renders; they never touch the network. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail.Fakes</RootNamespace>
+    <AssemblyName>DcxMail.Fakes</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Mail\DcxMail.Mail.csproj" />
+  </ItemGroup>
+</Project>

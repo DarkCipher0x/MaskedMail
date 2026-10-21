@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- What every masked-email service has in common: the alias model, the description each service gives of itself
+       (ServiceInfo: its settings fields and what it can do), the optional abilities (own inbox, sending, activity,
+       domain and forwarding choice), the shared HTTPS plumbing (RestProvider) and the addresses the app remembers.
+       The services themselves live in DcxMail.Providers.Masked, .Domains and .Disposable. -->
+  <PropertyGroup>
+    <RootNamespace>DcxMail.Providers</RootNamespace>
+    <AssemblyName>DcxMail.Providers</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DcxMail.Mail\DcxMail.Mail.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DcxMail.Tests" />
+  </ItemGroup>
+</Project>

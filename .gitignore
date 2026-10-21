@@ -1,0 +1,27 @@
+# Build output
+bin/
+obj/
+publish/
+.vs/
+*.user
+TestResults/
+
+# Releases are kept on disk (dist\<ver>\, dist\addons\) and attached to GitHub Releases, never committed
+dist/
+
+# Self-test scratch folders and reports
+.selftest/
+.selftest-*/
+selftest.txt
+
+# Local signing material and test packages (this PC only)
+*.pfx
+*.cer
+*.msix
+*.wixpdb
+
+# WPF's temporary project files (left behind when a build is stopped)
+*_wpftmp.csproj
+
+# The privacy scan's local term list (tools\write-public-source.ps1): names that must never be published stay on this PC
+*.local.txt

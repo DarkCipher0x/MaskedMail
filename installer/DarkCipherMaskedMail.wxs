@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DarkCipher MaskedMail MSI (WiX Toolset 5). Build with ..\build.ps1 -->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- UpgradeCode is the permanent identity of the product: never change it,
+       or new versions will install side-by-side instead of upgrading. -->
+  <Package Name="DarkCipher MaskedMail"
+           Manufacturer="darkcipher0x"
+           Version="$(var.Version)"
+           UpgradeCode="053f918a-404b-4528-b56e-ffc0c1e76023"
+           Scope="perMachine"
+           Compressed="yes"
+           Language="1033">
+
+    <SummaryInformation Description="DarkCipher MaskedMail $(var.Version) Installer" Manufacturer="darkcipher0x" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of DarkCipher MaskedMail is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Same minimum as the app: Windows 10 1809 (build 17763) or later, 64-bit -->
+    <Launch Condition="Installed OR VersionNT64" Message="DarkCipher MaskedMail needs 64-bit Windows 10 (1809) or Windows 11." />
+    <Property Id="WINBUILD">
+      <RegistrySearch Id="FindWinBuild" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Name="CurrentBuildNumber" Type="raw" />
+    </Property>
+    <Launch Condition="Installed OR WINBUILD &gt;= 17763" Message="DarkCipher MaskedMail needs Windows 10 version 1809 or later." />
+
+    <Icon Id="AppIcon" SourceFile="src\DcxMaskedMail\Assets\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Property Id="ARPCONTACT" Value="darkcipher0x" />
+    <Property Id="ARPURLINFOABOUT" Value="https://darkciphersystems.com" />
+    <Property Id="ARPCOMMENTS" Value="Masked email manager and lightweight mail client for Fastmail, SimpleLogin, addy.io and Firefox Relay" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <!-- C:\Program Files\DarkCipher Systems\MaskedMail -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="CompanyFolder" Name="DarkCipher Systems">
+        <Directory Id="INSTALLFOLDER" Name="MaskedMail" />
+      </Directory>
+    </StandardDirectory>
+
+    <!-- ===== Detection ===== -->
+    <!-- Microsoft Edge WebView2 Runtime (message viewer and composer). Built into Windows 11; may be missing on Windows 10. -->
+    <Property Id="WEBVIEW2_MACHINE">
+      <RegistrySearch Id="FindWebView2Machine" Root="HKLM" Key="SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" Name="pv" Type="raw" Bitness="always64" />
+    </Property>
+    <Property Id="WEBVIEW2_USER">
+      <RegistrySearch Id="FindWebView2User" Root="HKCU" Key="Software\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" Name="pv" Type="raw" />
+    </Property>
+    <!-- Pre-tick "install WebView2" only when neither the machine-wide nor the per-user runtime is present -->
+    <SetProperty Id="INSTALLWEBVIEW2" Value="1" After="AppSearch" Sequence="first"
+                 Condition="NOT Installed AND (NOT WEBVIEW2_MACHINE OR WEBVIEW2_MACHINE = &quot;0.0.0.0&quot;) AND (NOT WEBVIEW2_USER OR WEBVIEW2_USER = &quot;0.0.0.0&quot;)" />
+
+    <!-- ===== Options chosen in the installer ===== -->
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" Secure="yes" />
+    <Property Id="INSTALLWEBVIEW2" Secure="yes" />
+    <!-- Uninstall: what else to remove (off by default; data is kept unless ticked) -->
+    <Property Id="REMOVE_DATA" Secure="yes" />
+    <Property Id="REMOVE_CACHE" Secure="yes" />
+    <!-- Finish page: start the app -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch DarkCipher MaskedMail" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+
+    <Feature Id="Main" Title="DarkCipher MaskedMail" Level="1">
+      <Files Directory="INSTALLFOLDER" Include="$(var.PublishDir)\**" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="MaintenanceShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="DcxMenuFolder" Name="DarkCipher Systems">
+        <Component Id="StartMenuShortcut" Guid="dc378d45-54e0-4451-90b8-5fc8049db9ba">
+          <Shortcut Id="AppShortcut" Name="DarkCipher MaskedMail"
+                    Description="Masked email manager and mail client - by darkcipher0x"
+                    Target="[INSTALLFOLDER]DcxMaskedMail.exe" WorkingDirectory="INSTALLFOLDER" Icon="AppIcon">
+            <!-- Matches App.AppUserModelId so the taskbar groups the window with this shortcut -->
+            <ShortcutProperty Key="System.AppUserModel.ID" Value="darkcipher0x.DarkCipherMaskedMail" />
+          </Shortcut>
+          <RemoveFolder Id="RemoveStartMenuFolder" On="uninstall" />
+          <RegistryValue Root="HKLM" Key="Software\darkcipher0x\MaskedMail" Name="InstallDir" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+        </Component>
+        <!-- Opens this installer in maintenance mode: Repair, or Remove with the choice of deleting the encrypted data -->
+        <Component Id="MaintenanceShortcut" Guid="57c93fa9-a7e0-45bb-8d13-327ee6bd78c0">
+          <Shortcut Id="RepairShortcut" Name="DarkCipher MaskedMail - Repair or uninstall"
+                    Description="Repair DarkCipher MaskedMail, or uninstall it and choose whether to delete your data"
+                    Target="[System64Folder]msiexec.exe" Arguments="/i [ProductCode]" Icon="AppIcon" />
+          <RegistryValue Root="HKLM" Key="Software\darkcipher0x\MaskedMail" Name="MaintenanceShortcut" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="6b3e2b0c-6e87-47ca-92b8-753dfe70c7f2" Condition="INSTALLDESKTOPSHORTCUT=&quot;1&quot;">
+        <Shortcut Id="DesktopAppShortcut" Name="DarkCipher MaskedMail"
+                  Target="[INSTALLFOLDER]DcxMaskedMail.exe" WorkingDirectory="INSTALLFOLDER" Icon="AppIcon">
+          <ShortcutProperty Key="System.AppUserModel.ID" Value="darkcipher0x.DarkCipherMaskedMail" />
+        </Shortcut>
+        <RegistryValue Root="HKLM" Key="Software\darkcipher0x\MaskedMail" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- ===== Custom actions ===== -->
+    <!-- Before files change (upgrade, repair or removal): ask a running copy, which may sit in the notification area, to exit. -->
+    <CustomAction Id="CloseRunningApp" Directory="INSTALLFOLDER" Execute="immediate" Impersonate="yes" Return="ignore"
+                  ExeCommand="&quot;[INSTALLFOLDER]DcxMaskedMail.exe&quot; --exit" />
+    <!-- Optional prerequisite via winget (run as the user; skipped if already present). -->
+    <CustomAction Id="InstallWebView2" Directory="INSTALLFOLDER" Execute="deferred" Impersonate="yes" Return="ignore"
+                  ExeCommand="&quot;[System64Folder]cmd.exe&quot; /c winget install --id Microsoft.EdgeWebView2Runtime -e --silent --accept-source-agreements --accept-package-agreements" />
+    <!-- Uninstall: always removes the "start with Windows" entry; deletes the data that was ticked (runs as the user,
+         before the program files are removed). -->
+    <CustomAction Id="CleanupUserData" Directory="INSTALLFOLDER" Execute="deferred" Impersonate="yes" Return="ignore"
+                  ExeCommand="&quot;[INSTALLFOLDER]DcxMaskedMail.exe&quot; --cleanup data=[REMOVE_DATA] cache=[REMOVE_CACHE]" />
+    <!-- Finish page: launch the app as the installing user -->
+    <CustomAction Id="LaunchApp" Directory="INSTALLFOLDER" Impersonate="yes" Return="asyncNoWait"
+                  ExeCommand="&quot;[INSTALLFOLDER]DcxMaskedMail.exe&quot;" />
+
+    <InstallExecuteSequence>
+      <Custom Action="CloseRunningApp" Before="InstallValidate" Condition="Installed OR WIX_UPGRADE_DETECTED" />
+      <Custom Action="CleanupUserData" Before="RemoveFiles" Condition="REMOVE~=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
+      <Custom Action="InstallWebView2" After="InstallFiles" Condition="INSTALLWEBVIEW2=&quot;1&quot; AND NOT REMOVE" />
+    </InstallExecuteSequence>
+
+    <!-- ===== Installer UI: Welcome > Licence > Folder > Options > Install; maintenance: Repair / Remove (+ data) ===== -->
+    <UI Id="DcxMmUI">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Segoe UI" Size="9" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Segoe UI" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Segoe UI" Size="9" Bold="yes" />
+      <TextStyle Id="Dcx_Warn" FaceName="Segoe UI" Size="8" Red="168" Green="64" Blue="0" />
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+      <DialogRef Id="BrowseDlg" />
+      <DialogRef Id="DiskCostDlg" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+
+      <Dialog Id="DcxOptionsDlg" Width="370" Height="270" Title="!(loc.InstallDirDlg_Title)">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Options" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="300" Height="15" Transparent="yes" NoPrefix="yes"
+                 Text="Shortcuts and optional components." />
+        <Control Id="Upgrading" Type="Text" X="20" Y="50" Width="330" Height="12" NoPrefix="yes" Hidden="yes" ShowCondition="WIX_UPGRADE_DETECTED"
+                 Text="Upgrading from an earlier version: your API keys, folders and settings are kept." />
+        <Control Id="DesktopBox" Type="CheckBox" X="20" Y="66" Width="330" Height="12" Property="INSTALLDESKTOPSHORTCUT" CheckBoxValue="1"
+                 Text="Create a desktop shortcut" />
+        <Control Id="WebView2Box" Type="CheckBox" X="20" Y="86" Width="330" Height="12" Property="INSTALLWEBVIEW2" CheckBoxValue="1"
+                 Text="Install the Microsoft Edge WebView2 Runtime with winget (required)" />
+        <Control Id="WebView2Note" Type="Text" X="33" Y="99" Width="320" Height="20" NoPrefix="yes"
+                 Text="Needed to read and write HTML mail. Ticked only when it wasn't found on this PC (Windows 11 already has it)." />
+        <Control Id="DataNote" Type="Text" X="20" Y="130" Width="330" Height="90" NoPrefix="yes"
+                 Text="Your Fastmail token, other API keys and settings are stored per user in %APPDATA%\DarkCipher\MaskedMail, encrypted with AES-256-GCM; the key is protected by your Windows account. Mail itself stays in your Fastmail account. Closing the window keeps MaskedMail in the notification area so it can keep filing mail into each masked address's folder; Settings can also start it with Windows." />
+      </Dialog>
+
+      <Dialog Id="DcxRemoveDataDlg" Width="370" Height="270" Title="!(loc.MaintenanceTypeDlg_Title)">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.MaintenanceTypeDlgBannerBitmap)" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="250" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Remove your data too?" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="300" Height="15" Transparent="yes" NoPrefix="yes"
+                 Text="The program is removed. Tick anything you also want deleted for your account." />
+        <Control Id="DataBox" Type="CheckBox" X="20" Y="58" Width="330" Height="12" Property="REMOVE_DATA" CheckBoxValue="1"
+                 Text="Encrypted settings: Fastmail token, other API keys, folder list, preferences" />
+        <Control Id="DataWarn" Type="Text" X="33" Y="71" Width="320" Height="22" NoPrefix="yes"
+                 Text="{\Dcx_Warn}You would need to enter your API keys again after reinstalling." />
+        <Control Id="CacheBox" Type="CheckBox" X="20" Y="98" Width="330" Height="12" Property="REMOVE_CACHE" CheckBoxValue="1"
+                 Text="Cache: message viewer and editor browser profile, temporary message pages" />
+        <Control Id="Note" Type="Text" X="20" Y="126" Width="330" Height="90" NoPrefix="yes"
+                 Text="Nothing is deleted unless ticked. Your masked addresses, folders and mail live in Fastmail (and SimpleLogin, addy.io or Firefox Relay) and are never touched; mail will simply stop being filed automatically. The &quot;start with Windows&quot; entry is always removed. The WebView2 Runtime is a separate program: remove it in Windows Settings > Apps if you no longer need it." />
+      </Dialog>
+
+      <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath_$(sys.BUILDARCHSHORT)" Order="3" Condition="NOT WIXUI_DONTVALIDATEPATH" />
+      <Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4" Condition="NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID&lt;&gt;&quot;1&quot;" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApp" Order="998"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg" Condition="NOT Installed" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Condition="Installed AND PATCH" />
+      <Publish Dialog="LicenseAgreementDlg" Control="Print" Event="DoAction" Value="WixUIPrintEula_$(sys.BUILDARCHSHORT)" />
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" />
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Condition="LicenseAccepted = &quot;1&quot;" />
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="DoAction" Value="WixUIValidatePath_$(sys.BUILDARCHSHORT)" Order="2" Condition="NOT WIXUI_DONTVALIDATEPATH" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="SpawnDialog" Value="InvalidDirDlg" Order="3" Condition="NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID&lt;&gt;&quot;1&quot;" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="DcxOptionsDlg" Order="4" Condition="WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID=&quot;1&quot;" />
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2" />
+
+      <Publish Dialog="DcxOptionsDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg" />
+      <Publish Dialog="DcxOptionsDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="DcxOptionsDlg" Order="1" Condition="NOT Installed" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2" Condition="Installed AND NOT PATCH AND WixUI_InstallMode&lt;&gt;&quot;Remove&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="DcxRemoveDataDlg" Order="2" Condition="Installed AND WixUI_InstallMode=&quot;Remove&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" Condition="Installed AND PATCH" />
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="DcxRemoveDataDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg" />
+      <Publish Dialog="DcxRemoveDataDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="DcxRemoveDataDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+    </UI>
+    <UIRef Id="WixUI_Common" />
+    <WixVariable Id="WixUILicenseRtf" Value="installer\License.rtf" />
+  </Package>
+</Wix>
