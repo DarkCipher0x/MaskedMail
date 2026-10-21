@@ -1,0 +1,10 @@
+# Files that exist in the project but are never published. Same pattern rules as public-allowlist.txt.
+# The local term list for the privacy scan (names that must never appear in public files)
+*.local.txt
+tools/*.local.txt
+# The pinned gitleaks binary (tools\release\get-gitleaks.ps1 downloads it)
+tools/bin/**
+# Signing material and Store test packages, should any ever be made here
+**/*.pfx
+**/*.cer
+**/*.msix

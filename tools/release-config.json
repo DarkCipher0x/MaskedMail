@@ -1,0 +1,11 @@
+{
+  "_comment": "MaskedMail release pipeline settings (release.ps1, docs/RELEASING.md). Public steps can be stopped at any time with the DCX_PUBLISH_OFF=1 environment variable.",
+  "app": "MaskedMail",
+  "publicRemote": "https://github.com/DarkCipher0x/MaskedMail.git",
+  "publicRepoApi": "https://api.github.com/repos/DarkCipher0x/MaskedMail",
+  "publicClone": "../MaskedMail-public",
+  "branch": "main",
+  "website": false,
+  "discord": false,
+  "discordChannel": "maskedmail"
+}

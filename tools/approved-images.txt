@@ -1,0 +1,18 @@
+# MaskedMail images that a person has looked at: SHA-256, then the file. Add a line only after viewing the image
+# (tools\release\step-sanitise.ps1 refuses any other image). Build screenshots change every release: view the new
+# docs\screenshots\*.png, then add their hashes.
+1cc607cc5aa35ae532158e744a5b8731ee5359d415d07b9167c25324011901d6  docs/screenshots/compose.png  (viewed 2026-10-21)
+b8b3c8189a4da1d4807f6759fe3e8e67623f699d552baaca104cfa48bcc54709  docs/screenshots/main-dark.png  (viewed 2026-10-21)
+8933f52881eb4191fa58003bb313571d912d0037353896216c68e7313bcb46a1  docs/screenshots/main-light.png  (viewed 2026-10-21)
+59a8b0c0198f6d7932a8db8dafd166029c5090d2363ca06d09e4813e2ad36b30  docs/screenshots/main-throwaway.png  (viewed 2026-10-21)
+256a9560c791be0a2d0b679682b9e50a85db28525e4a38515b65fb3e59b8f585  docs/screenshots/new-alias.png  (viewed 2026-10-21)
+9cc44a950aff6012001675c1f7fced8b853f83c517db7cddc9d8e2fcac49a7c6  docs/screenshots/queue.png  (viewed 2026-10-21)
+5fbbae657db81137543a4a74f3a097b03c51ccfae4e66ce9e4b7612850151878  docs/screenshots/settings-disposable.png  (viewed 2026-10-21)
+5bfc2378833b6e2ecd8a4c7cd7a5ad0083fb4f5be062944f59b300bd99615e77  docs/screenshots/settings-domains.png  (viewed 2026-10-21)
+cc7f32016df0ed09eab37770c6f7422ef8a90ce0125c806e5bbb83918a74b656  docs/screenshots/settings-masked.png  (viewed 2026-10-21)
+15df6e6e3af3378a4a06db2af4cdf32032338112719a8ab97b8379ae9d850745  docs/screenshots/settings-throwaway.png  (viewed 2026-10-21)
+ea2911b7c7cc03c48aabb28e6b664190fed4c02aa85e64067acb741239d9c34f  docs/screenshots/settings.png  (viewed 2026-10-21)
+8dcebcdde4792069e6eb44c94e188aae67a055d80b5af0d780a0e997f19adb2b  docs/screenshots/sign-in.png  (viewed 2026-10-21)
+20ab4ccde659e19a91310470ff150cf8ea958e3ab254b188bd55d7329100e76c  docs/screenshots/throwaway.png  (viewed 2026-10-21)
+8238428671d36041d748d2e9abd6a2b41b5bad135199a012d656a54a225f9e98  src/DcxMaskedMail/Assets/logo.png  (viewed 2026-10-21)
+1fae499f9b3157e45a03befbbe13ee15d60aaec34421f2de5055769ba4bbdade  src/DcxMaskedMail/Assets/app.ico  (viewed 2026-10-21)

@@ -153,3 +153,4 @@ if ($identity.IdentityName -and $identity.Publisher -and $identity.PublisherDisp
     Write-Host 'Store identity not filled in yet: the MSIX was validated, not written (installer\msix\STORE-SUBMISSION.md).' -ForegroundColor Yellow
 }
 Write-Host "Release $version written to $dist" -ForegroundColor Green
+Write-Host 'Next: view any new screenshots (approve them in tools\approved-images.txt), then .\release.ps1 -DryRun and .\release.ps1 (docs\RELEASING.md).'

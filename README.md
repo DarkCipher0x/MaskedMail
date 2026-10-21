@@ -6,11 +6,16 @@
 
 <p align="center">
   <b>Masked and throwaway email for Windows, with a folder for every address and everything it stores encrypted.</b><br>
-  Fastmail · SimpleLogin and Proton Pass · addy.io · Firefox Relay · DuckDuckGo · your own domains · disposable inboxes
+  Fastmail · SimpleLogin and Proton Pass · addy.io · Firefox Relay · DuckDuckGo · your own domains · disposable inboxes<br>
+  <a href="https://darkciphersystems.com/software.html#maskedmail">Download</a> ·
+  <a href="../../releases/latest">Latest release</a> ·
+  <a href="docs/USER-GUIDE.md">User guide</a> ·
+  <a href="docs/SECURITY.md">Security</a> ·
+  <a href="docs/CHANGELOG.md">What's new</a>
 </p>
 
 <p align="center">
-  <img alt="Version 0.3.2" src="https://img.shields.io/badge/version-0.3.2-2dd4bf">
+  <img alt="Version 0.3.3" src="https://img.shields.io/badge/version-0.3.3-2dd4bf">
   <img alt="Windows 10/11 x64" src="https://img.shields.io/badge/Windows-10%20%7C%2011%20x64-0f172a">
   <img alt=".NET 8 WPF" src="https://img.shields.io/badge/.NET-8%20WPF-512bd4">
   <img alt="Licence MIT" src="https://img.shields.io/badge/licence-MIT-2dd4bf">
@@ -73,6 +78,7 @@ Everything it stores is encrypted. It shares its look and security model with Da
 | [Testing](docs/TESTING.md) | The unit tests (128) and the exe self-test, and what the build gates on |
 | [Changelog](docs/CHANGELOG.md) | Every version, newest first (generated from [release notes](docs/release-notes/)) |
 | [Microsoft Store submission](installer/msix/STORE-SUBMISSION.md) | MSIX packaging, listing text, certification answers |
+| [Releasing](docs/RELEASING.md) | The release pipeline: checks, sanitised source, GitHub, kill switch, recovery |
 | [Contributing](CONTRIBUTING.md) | Building, testing and the house rules for changes |
 | [Security policy](.github/SECURITY.md) | How to report a vulnerability privately |
 | [Third-party notices](THIRD-PARTY-NOTICES.md) | Components and their licences |
@@ -96,9 +102,10 @@ the reason.
 
 ## Install
 
-Download the latest release from the [Releases page](https://github.com/DarkCipher0x/MaskedMail/releases/latest). Each
-release has the MSI, a portable zip, `SHA256SUMS.txt`, the test reports and the source it was built from. Windows 10 or
-11 (x64) is required.
+Download MaskedMail from [darkciphersystems.com](https://darkciphersystems.com/software.html#maskedmail) or from the
+[Releases page](https://github.com/DarkCipher0x/MaskedMail/releases/latest). Both have the same files, with the same
+SHA-256 checksums. Each release has the MSI, a portable zip, `SHA256SUMS.txt`, the test reports and the source it was
+built from. Windows 10 or 11 (x64) is required.
 
 **Website edition (MSI).**
 - Run `DarkCipherMaskedMail-<version>-x64.msi`. It installs to

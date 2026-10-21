@@ -2,7 +2,7 @@
   <!-- Shared by every project in the solution: one version, one set of rules. -->
   <PropertyGroup>
     <!-- Bump this one line for every build (each release goes to dist\<version>\; old ones are kept). -->
-    <Version>0.3.2</Version>
+    <Version>0.3.3</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
