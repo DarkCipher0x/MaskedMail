@@ -84,5 +84,7 @@ foreach ($a in $assets) {
     $uploaded++
 }
 if ($DryRun -and $todo.Count) { return New-StepResult 'would-do' "release $tag exists; would upload $($todo.Count) missing file(s): $($todo -join ', ')" }
+# The release is complete and every file matches: record what the website publishes (dist\<ver>\release-manifest.json).
+if (-not $DryRun) { & (Join-Path $PSScriptRoot 'write-manifest.ps1') -Version $Version | Out-Host }
 if ($uploaded -eq 0) { return New-StepResult 'skipped' "release $tag already has all $matched files, every SHA-256 matching" }
 New-StepResult 'done' "release $tag ($($rel.html_url)): $uploaded uploaded, $matched already there, every SHA-256 matching"

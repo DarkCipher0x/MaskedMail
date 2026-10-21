@@ -13,7 +13,7 @@
 #   sanitise  rebuild the public copy from the source zip and run the allowlist, image, privacy and gitleaks gates (local)
 #   mirror    push it to the public repository as one commit and tag v<ver>                             (public)
 #   release   the GitHub Release with the installers and checksums                                     (public)
-#   website   darkciphersystems.com from the public copy (off for MaskedMail until Luke turns it on)     (public)
+#   website   darkciphersystems.com from the public copy (off when release-config.json says so)           (public)
 #   discord   the announcement card (off for MaskedMail until it has a channel)                         (public)
 #
 # Kill switch: DCX_PUBLISH_OFF=1 (for this shell, or "setx DCX_PUBLISH_OFF 1" for every new one) holds every public step
@@ -48,7 +48,7 @@ if ($hold) { Write-Host "Public steps are held by $hold." -ForegroundColor Yello
 function Record([string]$step, [string]$status, [string]$detail) {
     $state[$step] = @{ status = $status; at = (Get-Date).ToString('s'); detail = $detail }
     if (-not $DryRun) { Save-ReleaseState $Version $state }
-    $colour = switch ($status) { 'done' { 'Green' } 'skipped' { 'Green' } 'would-do' { 'Cyan' } 'off' { 'DarkGray' } 'held' { 'Yellow' } default { 'Red' } }
+    $colour = switch ($status) { 'done' { 'Green' } 'skipped' { 'Green' } 'would-do' { 'Cyan' } 'off' { 'DarkGray' } 'held' { 'Yellow' } 'pending' { 'Yellow' } default { 'Red' } }
     Write-Host ("  {0,-9} {1,-9} {2}" -f $step, $status, $detail) -ForegroundColor $colour
 }
 
@@ -83,4 +83,8 @@ if ($failed) {
 }
 if ($DryRun) { Write-Host 'Dry run finished: nothing was changed.' -ForegroundColor Cyan }
 elseif ($hold) { Write-Host "Local steps finished; public steps held. Run release.ps1 again once $hold is lifted." -ForegroundColor Yellow }
-else { Write-Host "MaskedMail $Version is published. Record: dist\$Version\release-state.json" -ForegroundColor Green }
+else {
+    $waiting = @($state.Keys | Where-Object { $state[$_].status -eq 'pending' })
+    if ($waiting.Count) { Write-Host "MaskedMail $Version is out on GitHub; still pending: $($waiting -join ', '). Run release.ps1 -From $($waiting[0]) once that is done." -ForegroundColor Yellow }
+    else { Write-Host "MaskedMail $Version is published everywhere. Record: dist\$Version\release-state.json" -ForegroundColor Green }
+}

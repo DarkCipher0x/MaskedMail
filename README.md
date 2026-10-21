@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version 0.3.3" src="https://img.shields.io/badge/version-0.3.3-2dd4bf">
+  <img alt="Version 0.3.4" src="https://img.shields.io/badge/version-0.3.4-2dd4bf">
   <img alt="Windows 10/11 x64" src="https://img.shields.io/badge/Windows-10%20%7C%2011%20x64-0f172a">
   <img alt=".NET 8 WPF" src="https://img.shields.io/badge/.NET-8%20WPF-512bd4">
   <img alt="Licence MIT" src="https://img.shields.io/badge/licence-MIT-2dd4bf">

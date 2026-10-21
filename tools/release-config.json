@@ -5,7 +5,7 @@
   "publicRepoApi": "https://api.github.com/repos/DarkCipher0x/MaskedMail",
   "publicClone": "../MaskedMail-public",
   "branch": "main",
-  "website": false,
-  "discord": false,
+  "website": true,
+  "discord": true,
   "discordChannel": "maskedmail"
 }

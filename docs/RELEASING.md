@@ -36,8 +36,8 @@ recorded in `dist\<version>\release-state.json`.
 | **sanitise** | Deletes and recreates `%TEMP%\dcxmail-public-<version>\` from the source zip, then checks every file again: the allowlist, no key or certificate files, every image approved, the privacy scan and gitleaks. | No | (always rebuilt from scratch) |
 | **mirror** | Checks the clone `..\MaskedMail-public` has exactly the expected `origin`, is on `main` and is clean. Makes its tree the staged copy: one commit `MaskedMail <version> - sanitised public source` and an annotated tag `v<version>`, as DarkCipher0x with the no-reply address. Pushes both, **never with `--force`**. | Yes | `v<version>` is on GitHub with exactly this content. With different content it stops: a published version is never changed. |
 | **release** | The GitHub Release `MaskedMail <version>`: notes from the public copy's release notes, plus the MSI, zip, source zip, `SHA256SUMS.txt`, the test reports and the sample add-ons. GitHub's SHA-256 of every file must equal ours. | Yes | Every file is there with a matching SHA-256. A missing file is uploaded; a different one stops the step. |
-| **website** | Off for MaskedMail (`tools\release-config.json`: `"website": false`). | Yes | Records `off` |
-| **discord** | Off for MaskedMail (`"discord": false`). | Yes | Records `off` |
+| **website** | Downloads every file in `dist\<version>\release-manifest.json` from darkciphersystems.com and compares its SHA-256 with the release. It never changes the site (see below). | Yes | Every file is live and identical. Not live yet: `pending`. Different: `failed` (a failed publish). |
+| **discord** | Checks the announcement card was posted (`%USERPROFILE%\.darkcipher\discord-posted.json`). | Yes | Recorded as posted; otherwise `pending` |
 
 ## Kill switch
 
@@ -96,15 +96,20 @@ version instead. If something must come down at once:
 1. `setx DCX_PUBLISH_OFF 1`, so nothing else goes out.
 2. **GitHub Release:** mark it as a pre-release or delete it on GitHub (Releases → the release → Edit or Delete).
 3. **Repository:** the next release's commit replaces the files. Removing a pushed commit needs `git push --force`,
-   which is never done without Luke's explicit go.
-4. **Website and Discord:** not used for MaskedMail yet.
+   which is never done without the owner's explicit go.
+4. **Website:** the Website & Deployments session restores the previous version from its release snapshot.
+5. **Discord:** delete the card in #maskedmail; post a correction if people may have downloaded the bad version.
 
 ## Website and Discord
 
-Both are switched off until Luke decides MaskedMail goes on darkciphersystems.com and gets a Discord channel. Then:
+The website is built and deployed by the **Website & Deployments** session, never by this project, and every production
+deploy needs the owner's go. This project hands over and then checks:
 
-- **website** will build its bundle only from the staged public copy, plus installers copied from `dist\<version>\`
-  that match the GitHub Release's SHA-256s. It hands the bundle to the Website & Deployments session's deploy
-  (production needs Luke's go), and compares every live file byte for byte.
-- **discord** will read its webhook from Windows Credential Manager (`DarkCipher/Discord/maskedmail`), never from a file.
-  Each post is recorded, so it is never sent twice.
+- **The manifest.** The release step writes `dist\<version>\release-manifest.json`: every file the site publishes, with
+  its role (installer, portable, source), its path on the site, its size and SHA-256, and the GitHub Release asset it
+  must equal. The installers are copies from `dist\<version>\`; the source zip is the public repository at the tag.
+- **The check.** `release.ps1 -From website` downloads each file from the live site and compares it byte for byte.
+  Run it after the deploy: any difference is a failed publish.
+- **Discord.** The card is posted to #maskedmail by the website's `announce-discord.ps1`, after a preview and the owner's OK.
+  The webhook is kept in Windows Credential Manager (`DarkCipher/Discord/maskedmail`), never in a file, and each post is
+  recorded so it is never sent twice. `release.ps1 -From discord` then records it here.

@@ -14,7 +14,7 @@ $need = "DarkCipherMaskedMail-$Version-x64.msi", "DarkCipher-MaskedMail-$Version
 $missing = @($need | Where-Object { -not (Test-Path (Join-Path $dist $_)) })
 if ($missing.Count) { throw "missing from dist\${Version}: $($missing -join ', ')" }
 
-# Checksums: every line verifies, and every file is listed (only this pipeline's own record may be unlisted).
+# Checksums: every line verifies, and every file is listed (only this pipeline's own record and manifest may be unlisted).
 $listed = @{}
 foreach ($line in [IO.File]::ReadAllLines((Join-Path $dist 'SHA256SUMS.txt'))) {
     if (-not $line.Trim()) { continue }
@@ -26,7 +26,7 @@ foreach ($line in [IO.File]::ReadAllLines((Join-Path $dist 'SHA256SUMS.txt'))) {
     $listed[$file] = $true
 }
 $unlisted = @(Get-ChildItem $dist -Recurse -File | ForEach-Object { $_.FullName.Substring($dist.Length + 1).Replace('\', '/') } |
-    Where-Object { $_ -ne 'SHA256SUMS.txt' -and $_ -ne 'release-state.json' -and -not $listed.ContainsKey($_) })
+    Where-Object { $_ -ne 'SHA256SUMS.txt' -and $_ -ne 'release-state.json' -and $_ -ne 'release-manifest.json' -and -not $listed.ContainsKey($_) })
 if ($unlisted.Count) { throw "files in dist\$Version that SHA256SUMS.txt does not cover: $($unlisted -join ', ')" }
 
 # The version, everywhere it is written.

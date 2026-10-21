@@ -1,9 +1,18 @@
-# Release step "discord": MaskedMail has no Discord channel yet (release-config.json "discord": false), so this step
-# records "off". When Luke turns it on, the card is made from the release notes and the GitHub Release's files, the
-# webhook is read from Windows Credential Manager (DarkCipher/Discord/maskedmail, never a file), and a post is recorded
-# in %USERPROFILE%\.darkcipher\discord-posted.json so it is never sent twice.
+# Release step "discord": checks the release was announced in MaskedMail's channel on The Cipher Collective.
+# The card (DarkCipherSystems-Website\tools\announcements\maskedmail-<ver>.json) is posted by the Website & Deployments
+# session after the site is live, with a preview and the owner's OK first; the webhook stays in Windows Credential Manager and
+# is never read here. Posted cards are recorded in %USERPROFILE%\.darkcipher\discord-posted.json, which this step reads:
+#   - recorded: done;   - not yet: pending (run release.ps1 -From discord after the post).
+# Off when release-config.json says "discord": false.
 param([Parameter(Mandatory)][string]$Version, [switch]$DryRun)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'ReleaseLib.ps1')
-if (-not (Get-ReleaseConfig).discord) { return New-StepResult 'off' 'MaskedMail has no Discord channel yet (release-config.json "discord": false)' }
-throw 'the Discord step is switched on but not built yet for MaskedMail: see docs/RELEASING.md, "Website and Discord"'
+$cfg = Get-ReleaseConfig
+if (-not $cfg.discord) { return New-StepResult 'off' 'MaskedMail has no Discord channel (release-config.json "discord": false)' }
+$key = "maskedmail-$Version"
+$posted = Join-Path $env:USERPROFILE '.darkcipher\discord-posted.json'
+if (Test-Path $posted) {
+    $p = ([IO.File]::ReadAllText($posted) | ConvertFrom-Json).$key
+    if ($p) { return New-StepResult 'done' "announced in #$($p.channel) at $($p.at)" }
+}
+New-StepResult 'pending' "card $key not posted yet (Website & Deployments posts it after the site is live, with the owner's OK)"
